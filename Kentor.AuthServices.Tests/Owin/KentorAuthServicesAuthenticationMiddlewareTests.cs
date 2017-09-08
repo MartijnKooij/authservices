@@ -839,7 +839,7 @@ namespace Kentor.AuthServices.Tests.Owin
             await middleware.Invoke(context);
 
             context.Response.StatusCode.Should().Be(302);
-            context.Response.Headers["Location"].Should().Be("http://localhost/LoggedIn?error=access_denied");
+            context.Response.Headers["Location"].Should().Be("http://localhost/LoggedIn?error=digid_failed");
             context.Authentication.AuthenticationResponseGrant.Should().BeNull();
         }
 
@@ -901,7 +901,7 @@ namespace Kentor.AuthServices.Tests.Owin
             await subject.Invoke(context);
 
             context.Response.StatusCode.Should().Be(302);
-            context.Response.Headers["Location"].Should().Be("http://localhost/ApplicationPath?error=access_denied");
+            context.Response.Headers["Location"].Should().Be("http://localhost/ApplicationPath?error=digid_failed");
             context.Authentication.AuthenticationResponseGrant.Should().BeNull();
             options.SPOptions.Logger.Received().WriteError(Arg.Any<string>(), null);
         }
@@ -974,7 +974,7 @@ namespace Kentor.AuthServices.Tests.Owin
             await middleware.Invoke(context);
 
             context.Response.StatusCode.Should().Be(302);
-            context.Response.Headers["Location"].Should().Be("http://localhost/PathInRequestState?value=42&error=access_denied");
+            context.Response.Headers["Location"].Should().Be("http://localhost/PathInRequestState?value=42&error=digid_failed");
             context.Authentication.AuthenticationResponseGrant.Should().BeNull();
         }
 

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Kentor.AuthServices.Exceptions;
 
 namespace Kentor.AuthServices.Owin
 {
@@ -89,9 +90,20 @@ namespace Kentor.AuthServices.Owin
                 };
             }
 
-            // The Google middleware adds this, so let's follow that example.
-            authProperties.RedirectUri = WebUtilities.AddQueryString(
-                authProperties.RedirectUri, "error", "access_denied");
+            // <digid>
+            const string errorCode = "digid_failed";
+            var samlException = ex as UnsuccessfulSamlOperationException;
+            if (samlException == null)
+            {
+                authProperties.RedirectUri = WebUtilities.AddQueryString(authProperties.RedirectUri, "error", errorCode);
+            }
+            else
+            {
+                const string cancelledCode = "digid_cancelled";
+                var code = samlException.SecondLevelStatus == "urn:oasis:names:tc:SAML:2.0:status:AuthnFailed" ? cancelledCode : errorCode;
+                authProperties.RedirectUri = WebUtilities.AddQueryString(authProperties.RedirectUri, "error", code);
+            }
+            // </digid>
 
             string samlResponse = ex.Data.Contains("Saml2Response")
                 ? " The received SAML data is\n" + ex.Data["Saml2Response"]
